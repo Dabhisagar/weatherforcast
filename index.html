@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" href="Images\Logo.png" type="image/png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather app</title>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-auth.js"></script>
+
+    <link rel="stylesheet" href="custom.css" />
+  </head>
+  <body>
+    <div class="card">
+      <div class="signup-page">
+        <h2>Signup</h2>
+        <div class="vertical-inputs">
+          <input type="email" placeholder="Gmail" class="signup-email" />
+          <input
+            type="password"
+            placeholder="Password"
+            class="signup-password"
+          />
+        </div>
+        <button class="signup-btn">Signup</button>
+        <p>
+          Already have an account?
+          <button><span class="login-link">Login</span></button>
+        </p>
+      </div>
+
+      <div class="login-page" style="display: none">
+        <h2>Login</h2>
+        <div class="vertical-inputs">
+          <input type="email" placeholder="Gmail" class="login-email" />
+          <input
+            type="password"
+            placeholder="Password"
+            class="login-password"
+          />
+        </div>
+
+        <button class="login-btn">Login</button>
+        <p>
+          Don't have an account?
+          <button><span class="signup-link">Signup</span></button>
+        </p>
+      </div>
+      <div>
+        <div id="clock" onload="currentTime()"></div>
+
+        <div class="search-page" style="display: none">
+          <div class="search">
+            <input
+              type="text"
+              placeholder="Enter City Name"
+              spellcheck="false"
+            />
+            <button><img src="images/search.png" /></button>
+          </div>
+
+          <div class="error">
+            <p>Invalid City Name</p>
+          </div>
+          <div class="weather">
+            <img src="images\rain.png" class="weather-icon" />
+            <div>
+              <h1 class="temp">22°c</h1>
+              <h2 class="city"></h2>
+            </div>
+
+            <div class="details">
+              <div class="col">
+                <img src="images/humidity.png" />
+                <div>
+                  <p class="humidity">50%</p>
+                  <p>Humidity</p>
+                </div>
+              </div>
+              <div class="col">
+                <div>
+                  <img src="images\wind.png" />
+                </div>
+                <div>
+                  <p class="wind">15 km/h</p>
+                  <p>Wind Speed</p>
+                  <button class="logout-Btn" onclick="logout()">Logout</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script src="clock.js"></script>
+      <script src="auth.js"></script>
+      <script src="weather.js"></script>
+      <script>
+        function isAlphanumeric(input) {
+          const alphanumericRegex = /^[a-z,A-Z,0-9]*$/;
+          return alphanumericRegex.test(input);
+        }
+
+        const signupPage = document.querySelector(".signup-page");
+        const loginPage = document.querySelector(".login-page");
+        const searchPage = document.querySelector(".search-page");
+        const signupemail = document.querySelector(".signup-email");
+        const signupPassword = document.querySelector(".signup-password");
+        const signupBtn = document.querySelector(".signup-btn");
+        const signuplink = document.querySelector(".signup-link");
+        const loginLink = document.querySelector(".login-link");
+        const loginemail = document.querySelector(".login-email");
+        const loginPassword = document.querySelector(".login-password");
+        const loginBtn = document.querySelector(".login-btn");
+
+        loginLink.addEventListener("click", () => {
+          signupPage.style.display = "none";
+          loginPage.style.display = "block";
+        });
+        signuplink.addEventListener("click", () => {
+          signupPage.style.display = "block";
+          loginPage.style.display = "none";
+        });
+        signupBtn.addEventListener("click", () => {
+          const email = signupemail.value;
+          const password = signupPassword.value;
+
+          if (
+            email.endsWith("@gmail.com") &&
+            isAlphanumeric(password) &&
+            password.length >= 6
+          ) {
+            firebase
+              .auth()
+              .createUserWithEmailAndPassword(email, password)
+              .then(() => {
+                console.log("Sign up success");
+                signupPage.style.display = "none";
+                loginPage.style.display = "block";
+                alert("sign up successful");
+              })
+              .catch((error) => {
+                alert(
+                  "Please enter a valid alphanumeric password (at least 6 characters)."
+                );
+              });
+          } else if (!email.endsWith("@gmail.com")) {
+            alert("Please enter a valid Gmail.");
+          } else if (!isAlphanumeric(password) || password.length < 6) {
+          }
+        });
+
+        function isAlphanumeric(input) {
+          const alphanumericRegex = /^[a-zA-Z0-9]*$/;
+          return alphanumericRegex.test(input);
+        }
+
+        loginBtn.addEventListener("click", () => {
+          const email = loginemail.value;
+          const password = loginPassword.value;
+
+          if (
+            email.endsWith("@gmail.com") &&
+            isAlphanumeric(password) &&
+            password.length >= 6
+          ) {
+            firebase
+              .auth()
+              .signInWithEmailAndPassword(email, password)
+              .then(() => {
+                console.log("log in success");
+                alert("Login successfull");
+                loginPage.style.display = "none";
+                searchPage.style.display = "block";
+              })
+              .catch((error) => {
+                alert("Password is Incorrect");
+              });
+          } else if (!email.endsWith("@gmail.com")) {
+            alert("Please enter a valid Gmail.");
+          } else if (!isAlphanumeric(password) || password.length < 6) {
+            alert(
+              "Please enter a valid alphanumeric password (at least 6 characters)."
+            );
+          }
+        });
+      </script>
+    </div>
+  </body>
+</html>
